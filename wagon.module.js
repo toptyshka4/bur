@@ -7,7 +7,8 @@
     cellSelector: '.wagon, [data-number]',
     typeToAsset: {
       'одноэтажный': './assets/wagon_single.jpg',
-      'двухэтажный': './assets/wagon_double.jpg'
+      'двухэтажный': './assets/wagon_double.jpg',
+      'буревестник': './assets/wagon_burevestnik.jpg'
     },
     modelToTypeRules: null,
     debug: false
