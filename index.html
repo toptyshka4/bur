@@ -945,6 +945,83 @@
   try { window.__wagonFlipBridgeApply && window.__wagonFlipBridgeApply(); } catch(e){}
 </script>
 <script src="./assets/js/autotype-by-db.js?v=1"></script>
+<script>
+
+    ;(function(){
+      try{
+        function norm(x){ var d=String(x||'').replace(/\D/g,''); var last=d.slice(-8); return last.padStart(8,'0'); }
+        function parseNumbers(raw){
+          if(!raw) return [];
+          // split by comma, semicolon, whitespace, newlines — keeping digits only
+          return String(raw)
+            .split(/[\s,;]+/)
+            .map(norm)
+            .filter(Boolean);
+        }
+        var addOkBtn = document.getElementById('add-ok');
+        if (addOkBtn && !addOkBtn.__patched){
+          addOkBtn.__patched = true;
+          addOkBtn.onclick = function(){
+            var trackSel = document.getElementById('add-track');
+            var typeSel  = document.getElementById('add-type');
+            var nameEl   = document.getElementById('add-trainname');
+            var numsEl   = document.getElementById('add-numbers');
+            var trackId  = trackSel && trackSel.value ? String(trackSel.value) : '';
+            if(!trackId){
+              // pick first available track automatically
+              if (trackSel && trackSel.options && trackSel.options.length>0){
+                trackSel.selectedIndex = 0;
+                trackId = String(trackSel.value||'');
+              }
+            }
+            if(!trackId){ alert('Выберите путь'); return; }
+            var defaultType = (typeSel && typeSel.value) || 'single';
+            var list = parseNumbers(numsEl && numsEl.value);
+            // Deduplicate while keeping order
+            var seen = new Set(); list = list.filter(function(n){ if(seen.has(n)) return false; seen.add(n); return true; });
+            // ensure state for the track
+            if(!window.state || !window.state[trackId]){
+              // try to infer capacity from DOM
+              var cap = 20; // fallback
+              try{
+                var panel = document.querySelector('[data-track="'+trackId+'"]')?.closest('.panel');
+                var slots = document.querySelectorAll('.slot[data-track="'+trackId+'"]');
+                cap = slots ? slots.length : cap;
+              }catch(_){}
+              window.state = window.state || {};
+              window.state[trackId] = Array(cap).fill(null);
+            }
+            var slots = window.state[trackId] || [];
+            var i=0;
+            for (var k=0; k<slots.length && i<list.length; k++){
+              if (slots[k]===null){
+                var num = list[i++];
+                var tkey = defaultType;
+                try{
+                  if (window.__autoTypeByNumber){
+                    var g = window.__autoTypeByNumber(num);
+                    if (g) tkey = g;
+                  }
+                }catch(_){}
+                slots[k] = { id: Date.now()+'-'+Math.random(), number: num, type: tkey, status: 'normal', defectReason: '' };
+              }
+            }
+            if (nameEl && String(nameEl.value||'').trim()){
+              window.meta = window.meta || {};
+              window.meta[trackId] = window.meta[trackId] || {};
+              window.meta[trackId].trainName = String(nameEl.value).trim();
+            }
+            try{ window.saveAll && window.saveAll(); }catch(_){}
+            try{ window.hydrate && window.hydrate(); }catch(_){}
+            // close modal
+            var modal = document.getElementById('modalAdd');
+            if (modal) modal.classList.add('hidden');
+          };
+        }
+      }catch(e){ console.error('[add-ok patch]', e); }
+    })();
+    
+</script>
 </body>
 
 </html>
