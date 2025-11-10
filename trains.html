@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<title>Сформированные поезда</title>
+<link rel="stylesheet" href="./assets/css/site.css">
+<style>
+  body{font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial; padding:16px;}
+  .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+  .panel{background:#fff; border:1px solid var(--border, #e5e7eb); border-radius:12px; margin:12px 0;}
+  .panel .head{padding:10px 12px; background:#f3f4f6; border-bottom:1px solid var(--border,#e5e7eb); border-top-left-radius:12px;border-top-right-radius:12px; display:flex; align-items:center; justify-content:space-between;}
+  .panel .body{padding:12px;}
+  .btn{border:1px solid #cfd8e3; border-radius:10px; padding:6px 10px; background:#e5e7eb; cursor:pointer;}
+  .btn.primary{background:#2563eb; color:#fff; border-color:transparent;}
+  input, textarea, select{border:1px solid #cfd8e3; border-radius:10px; padding:6px 10px; font:inherit;}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media(max-width:1100px){ .grid{grid-template-columns:1fr;} }
+  .wagon-list{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+  .wagon-card{border:1px solid #e5e7eb; border-radius:10px; padding:6px; display:flex; align-items:center; gap:8px;}
+  .wagon-card img{height:42px}
+  .muted{opacity:.8;}
+  .tag{border:1px solid #e5e7eb; border-radius:8px; padding:2px 6px; font-size:12px;}
+  .sched{display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; width:100%;}
+  .sched .cell{border:1px solid #e5e7eb; border-radius:10px; padding:8px;}
+  .thumbs{display:flex; gap:4px; flex-wrap:wrap; margin-top:6px;}
+  .thumbs img{height:28px; border-radius:6px; border:1px solid #e5e7eb;}
+</style>
+</head>
+<body id="formed-trains-page">
+  <div class="row" style="justify-content:space-between">
+    <h1 style="margin:0">Сформированные поезда</h1>
+    <div class="row"><a href="./index.html" class="btn">Назад</a></div>
+  </div>
+
+  <div class="panel">
+    <div class="head"><div>Новый поезд</div><div id="edit-indicator" class="muted"></div></div>
+    <div class="body">
+      <div class="grid">
+        <div><div class="muted">Название/номер</div><input id="ft-name" placeholder="№100"></div>
+        <div><div class="muted">Сообщение</div><input id="ft-msg" placeholder="Маршрут / примечание"></div>
+        <div><div class="muted">Время прибытия</div><input id="ft-arr" type="time" value="08:00"></div>
+        <div><div class="muted">Время отправления</div><input id="ft-dep" type="time" value="20:00"></div>
+        <div><div class="muted">Частота</div>
+          <select id="ft-freq">
+            <option value="daily" selected>Ежедневно</option>
+            <option value="custom">По дням недели (по составам)</option>
+          </select>
+        </div>
+        <div><div class="muted">Оборот (чч:мм)</div><input id="ft-turnover" placeholder="36:00" value="24:00"></div>
+      </div>
+      <div style="margin-top:8px;">
+        <button id="ft-add-consist" class="btn">Добавить состав</button>
+        <button id="ft-save" class="btn primary">Сохранить поезд</button>
+        <button id="ft-save-as" class="btn">Сохранить как новый</button>
+        <button id="ft-reset" class="btn">Очистить форму</button>
+      </div>
+      <div id="ft-consists"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="head"><div>Быстрый поиск по БД вагонов</div></div>
+    <div class="body">
+      <div class="row">
+        <input id="ft-search" placeholder="Введите часть номера (минимум 2 цифры)" style="min-width:260px;">
+        <div class="row">
+          <div class="muted">Добавлять в</div>
+          <select id="ft-target-consist"></select>
+        </div>
+      </div>
+      <div id="ft-search-results" class="wagon-list"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="head"><div>Мои поезда</div><div class="muted">Список сохраняется в этом браузере</div></div>
+    <div class="body" id="ft-list"></div>
+  </div>
+
+<script src="./assets/js/flip.js"></script>
+<script src="./assets/js/formed-trains.js"></script>
+<script src="./wagon.module.js"></script>
+<script src="./assets/js/flip-bridge.js"></script>
+<script src="./assets/js/autotype-by-db.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+.wagon-tooltip{position:fixed;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.12);padding:10px;z-index:10000;min-width:240px}
+.wagon-tooltip .title{font-weight:700;margin-bottom:6px;color:#1e3a8a}
+.wagon-tooltip .row{display:flex;gap:8px;border-top:1px dotted #e5e7eb;padding:4px 0}
+.wagon-tooltip .row .k{flex:0 0 40%;color:#6b7280}
+.wagon-tooltip .row .v{flex:1}
+.wagon-badge{position:absolute;top:4px;right:4px;font-weight:700;padding:2px 6px;border-radius:6px;background:#111;color:#fff;opacity:.9}
+.wagon-badge.star{background:#1e40af}
+.wagon-badge.huebner{background:#10b981}
+.wagon-root{position:relative}
+
+/* Missing record highlight */
+.missing-slot{outline:2px dashed #ef4444!important;outline-offset:2px;box-shadow:0 0 0 3px rgba(239,68,68,.12)}
+
