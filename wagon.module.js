@@ -273,6 +273,7 @@
 
   function markMissing(root, key){
     root.classList.add('wagon-root');
+    root.classList.add('missing-slot');
     root.setAttribute('tabindex', '0');
     root.addEventListener('mouseenter', () => notify('Нет данных по вагону '+(key? JSON.stringify(key.value):'')));
   }
@@ -281,6 +282,7 @@
     if (initialized.has(root)) return;
     initialized.add(root);
     root.classList.add('wagon-root');
+    root.classList.remove('missing-slot');
 
     const key = getKeyFromEl(root);
     const rec = getRecByKey(key);
