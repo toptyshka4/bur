@@ -1,0 +1,21 @@
+/* Базовые стили демо-сайта */
+* { box-sizing: border-box; }
+body { font: 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin: 0; color: #0f172a; background: #f8fafc; }
+.site-header { padding: 20px; background: #0ea5e9; color: white; }
+.container { padding: 24px; max-width: 980px; margin: 0 auto; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.wagon-tile { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; }
+.wagon-tile h3 { margin: 0 0 8px 0; font-size: 16px; }
+.footer { padding: 16px; text-align: center; color: #64748b; }
+.wagon-root img {
+  backface-visibility: visible;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+/* Missing record highlight */
+.missing-slot{outline:2px dashed #ef4444!important;outline-offset:2px;box-shadow:0 0 0 3px rgba(239,68,68,.12)}
+
+.flip-h img {
+  transform: scaleX(-1);
+}
