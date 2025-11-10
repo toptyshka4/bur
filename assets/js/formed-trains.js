@@ -63,7 +63,12 @@
           if(nameInput) nameInput.value = t.name || '';
           const nums=(t.consists||[]).flatMap(c=>c.numbers||[]);
           if(numbersArea) numbersArea.value = nums.join(', ');
-          const ok=document.getElementById('add-ok'); if(ok) ok.click();
+          const ok=document.getElementById('add-ok'); // Ensure some track is selected before auto-pressing OK
+          const trackSel = document.getElementById('add-track');
+          if (trackSel && !trackSel.value && trackSel.options && trackSel.options.length>0){
+            trackSel.selectedIndex = 0;
+          }
+          if(ok) ok.click();
         });
       }
     }
