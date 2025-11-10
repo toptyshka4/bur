@@ -508,7 +508,7 @@
 
 
   (function(){
-    const IMG = { single: 'assets/wagon_single.jpg', double: 'assets/wagon_double.jpg', burevestnik:'assets/wagon_burevestnik.jpg' };
+    const IMG = { single: 'assets/wagon_single.jpg', double: 'assets/wagon_double.jpg' };
     const STORAGE_KEY = 'yard-tracker-safe2-v1';
     const ORDER = [
       ['РЭД', [{id:'61',c:20},{id:'62',c:20},{id:'63',c:20},{id:'64',c:20},{id:'65',c:20},{id:'66',c:20}]],
@@ -543,11 +543,85 @@
     document.getElementById('add-cancel').onclick=()=> showAdd(false);
     function showAdd(show){ document.getElementById('modalAdd').classList.toggle('hidden', !show); }
     function fillAddTracks(){ const sel=document.getElementById('add-track'); sel.innerHTML=''; ORDER.forEach(([title,tracks])=> tracks.forEach(t=>{ const o=document.createElement('option'); o.value=t.id; o.textContent=title+' — путь '+t.id; sel.appendChild(o); })); }
-    document.getElementById('add-ok').onclick=()=>{ const trackId=document.getElementById('add-track').value; const type=document.getElementById('add-type').value; const trainName=(document.getElementById('add-trainname').value||'').trim(); const list=(document.getElementById('add-numbers').value||'').split(/[\n,;]+/).map(s=>s.trim()).filter(Boolean); if(!trackId){ alert('Выберите путь'); return; } if(list.length===0){ alert('Введите номера вагонов'); return; } const slots=state[trackId]; let i=0; for(let k=0;k<slots.length && i<list.length;k++){ if(slots[k]===null){
-  const num = list[i++];
-  let tkey = defaultType;
-  try{ if (window.__autoTypeByNumber){ const g = __autoTypeByNumber(num); if (g) tkey = g; } }catch(_){}
-  slots[k] = { id: Date.now()+'-'+Math.random(), number:num, type:tkey, status:'normal', defectReason:'' };
+    document.getElementById('add-ok').onclick=()=>{
+  var trackIdEl = document.getElementById('add-track');
+  var typeEl = document.getElementById('add-type');
+  var nameEl = document.getElementById('add-trainname');
+  var numsEl = document.getElementById('add-numbers');
+
+  var trackId = trackIdEl ? String(trackIdEl.value) : '';
+  var defaultType = typeEl ? String(typeEl.value || 'single') : 'single';
+  var trainName = nameEl ? nameEl.value.trim() : '';
+
+  var listRaw = numsEl ? numsEl.value : '';
+  var parts = listRaw.split(/[\s,;]+/);
+  var list = [];
+  for (var ii=0; ii<parts.length; ii++){
+    var s = String(parts[ii] || '').replace(/\D/g,'');
+    if (!s) continue;
+    s = ('00000000' + s.slice(-8)).slice(-8);
+    list.push(s);
+  }
+
+  if (!trackId) { alert('Выберите путь'); return; }
+  if (!list.length) { alert('Добавьте хотя бы один номер вагона'); return; }
+
+  if (!state[trackId] || !Array.isArray(state[trackId])) {
+    var defCap = 0;
+    for (var iGrp=0; iGrp<ORDER.length; iGrp++){
+      var arr = ORDER[iGrp][1] || [];
+      for (var j=0; j<arr.length; j++){
+        if (String(arr[j].id) === String(trackId)){ defCap = arr[j].c || 0; break; }
+      }
+      if (defCap) break;
+    }
+    state[trackId] = Array(defCap);
+    for (var f=0; f<defCap; f++) state[trackId][f] = null;
+  }
+
+  var slots = state[trackId];
+  var i = 0;
+  for (var k=0; k<slots.length && i<list.length; k++){
+    if (slots[k] === null){
+      var num = list[i++];
+      var tkey = defaultType;
+      try {
+        if (window.__autoTypeByNumber){
+          var g = __autoTypeByNumber(num);
+          if (g) tkey = g;
+        }
+      }catch(_){}
+      slots[k] = { id: String(Date.now())+'-'+Math.random(), number: num, type: tkey, status: 'normal', defectReason: '' };
+    }
+  }
+
+  if (i < list.length){
+    alert('Недостаточно свободных мест на выбранном пути. Добавлено вагонов: ' + i + ' из ' + list.length);
+  }
+
+  if (trainName){
+    if (!meta[trackId]) meta[trackId] = {};
+    meta[trackId].trainName = trainName;
+  }
+  saveAll();
+  showAdd(false);
+  hydrate();
+};
+    }
+  }
+
+  if (i < list.length){
+    alert('Недостаточно свободных мест на выбранном пути. Добавлено вагонов: ' + i + ' из ' + list.length);
+  }
+
+  if (trainName){
+    meta[trackId] = meta[trackId] || {};
+    meta[trackId].trainName = trainName;
+  }
+  saveAll();
+  showAdd(false);
+  hydrate();
+};
 } } if(trainName){ meta[trackId]=meta[trackId]||{}; meta[trackId].trainName=trainName; } saveAll(); showAdd(false); hydrate(); };
 
     // Bind buttons in each panel
