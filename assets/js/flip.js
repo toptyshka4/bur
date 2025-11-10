@@ -21,7 +21,10 @@
       'одноэтажный:left': 'assets/wagon_single.jpg',
       'одноэтажный:right': 'assets/wagon_single_inverted.jpg',
       'двухэтажный:left': 'assets/wagon_double.jpg',
-      'двухэтажный:right': 'assets/wagon_double_inverted.jpg'
+      'двухэтажный:right': 'assets/wagon_double_inverted.jpg',
+      'буревестник:left': 'assets/wagon_burevestnik.jpg',
+      'буревестник:right': 'assets/wagon_burevestnik_inverted.jpg'
+
     };
     document.querySelectorAll('[data-wagon]').forEach(el=>{
       const num = normalize(el.getAttribute('data-wagon'));
