@@ -10,7 +10,9 @@
       'двухэтажный': './assets/wagon_double.jpg',
       'буревестник': './assets/wagon_burevestnik.jpg'
     },
-    modelToTypeRules: null,
+    modelToTypeRules: [
+      { test: /буревестник/i, type: 'буревестник' }
+    ],
     debug: false
   };
 
