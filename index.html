@@ -484,7 +484,8 @@
       const base = './assets/';
       const IMG = {
         'одноэтажный': flipped ? base+'wagon_single_inverted.jpg' : base+'wagon_single.jpg',
-        'двухэтажный': flipped ? base+'wagon_double_inverted.jpg' : base+'wagon_double.jpg'
+        'двухэтажный': flipped ? base+'wagon_double_inverted.jpg' : base+'wagon_double.jpg',
+        'буревестник': flipped ? base+'wagon_burevestnik_inverted.jpg' : base+'wagon_burevestnik.jpg',
       };
       return IMG[m] || (flipped ? base+'wagon_single_inverted.jpg' : base+'wagon_single.jpg');
     }
@@ -929,7 +930,8 @@
     cellSelector: '.wagon, [data-number]',         // где искать вагоны
     typeToAsset: {
       'одноэтажный': './assets/wagon_single.jpg', 
-      'двухэтажный': './assets/wagon_double.jpg'
+      'двухэтажный': './assets/wagon_double.jpg',
+      'буревестник': './assets/wagon_burevestnik.jpg',
     },
     debug: false
   });
