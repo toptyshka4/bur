@@ -519,11 +519,17 @@
     let raw=null; try{ raw=localStorage.getItem(STORAGE_KEY); }catch(e){ raw=null; }
     let data={cells:{}, meta:{}}; try{ data = raw? JSON.parse(raw) : data; }catch(e){ data={cells:{}, meta:{}}; }
     let state = data.cells || {};
-    let meta  = data.meta  || {};
-    let dragPayload = null, ctxData=null, nameEditTrackId=null;
+let meta  = data.meta  || {};
+let dragPayload = null, ctxData=null, nameEditTrackId=null;
 
-    ORDER.forEach(([t,arr])=> arr.forEach(o=>{ if(!state[o.id]) state[o.id]=Array.from({length:o.c},()=>null); if(!meta[o.id]) meta[o.id]={trainName:''}; }));
-    function saveAll(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({cells:state, meta:meta})); }catch(e){} }
+// === ИСПРАВЛЕНИЕ: Делаем переменные глобальными ===
+window.state = state;
+window.meta = meta;
+window.saveAll = saveAll;
+window.hydrate = hydrate;
+
+ORDER.forEach(([t,arr])=> arr.forEach(o=>{ if(!state[o.id]) state[o.id]=Array.from({length:o.c},()=>null); if(!meta[o.id]) meta[o.id]={trainName:''}; }));
+function saveAll(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({cells:state, meta:meta})); }catch(e){} }
     function two(number){ const d=(number||'').replace(/\D/g,'').padStart(8,'0').slice(-8); return {top:d.slice(0,3), bottom:d.slice(3)}; }
     function makeW(w){ const card=document.createElement('div'); card.className='wagon '+(w.status==='reserve'?'reserve':w.status==='defect'?'defect':''); card.draggable=true; const n=two(w.number); const num=document.createElement('div'); num.className='num'; num.innerHTML='<div>'+n.top+'</div><div>'+n.bottom+'</div>'; const img=document.createElement('img'); img.src=IMG[w.type]; img.className='img '+(w.type==='single'?'single':'double'); card.appendChild(num); const __num = w.number || w['Номер'] || (w.num && String(w.num)) || '';
       const __model = w['Модель вагона'] || w.type || '';
@@ -952,7 +958,6 @@
         function norm(x){ var d=String(x||'').replace(/\D/g,''); var last=d.slice(-8); return last.padStart(8,'0'); }
         function parseNumbers(raw){
           if(!raw) return [];
-          // split by comma, semicolon, whitespace, newlines — keeping digits only
           return String(raw)
             .split(/[\s,;]+/)
             .map(norm)
@@ -967,6 +972,7 @@
             var nameEl   = document.getElementById('add-trainname');
             var numsEl   = document.getElementById('add-numbers');
             var trackId  = trackSel && trackSel.value ? String(trackSel.value) : '';
+            
             if(!trackId){
               // pick first available track automatically
               if (trackSel && trackSel.options && trackSel.options.length>0){
@@ -975,45 +981,51 @@
               }
             }
             if(!trackId){ alert('Выберите путь'); return; }
+            
             var defaultType = (typeSel && typeSel.value) || 'single';
             var list = parseNumbers(numsEl && numsEl.value);
+            
             // Deduplicate while keeping order
-            var seen = new Set(); list = list.filter(function(n){ if(seen.has(n)) return false; seen.add(n); return true; });
-            // ensure state for the track
-            if(!window.state || !window.state[trackId]){
-              // try to infer capacity from DOM
-              var cap = 20; // fallback
-              try{
-                var panel = document.querySelector('[data-track="'+trackId+'"]')?.closest('.panel');
-                var slots = document.querySelectorAll('.slot[data-track="'+trackId+'"]');
-                cap = slots ? slots.length : cap;
-              }catch(_){}
-              window.state = window.state || {};
-              window.state[trackId] = Array(cap).fill(null);
-            }
-            var slots = window.state[trackId] || [];
-            var i=0;
-            for (var k=0; k<slots.length && i<list.length; k++){
-              if (slots[k]===null){
+            var seen = new Set(); 
+            list = list.filter(function(n){ 
+              if(seen.has(n)) return false; 
+              seen.add(n); 
+              return true; 
+            });
+            
+            // Используем оригинальный код из основного обработчика
+            var slots = window.state[trackId];
+            var i = 0;
+            for(var k = 0; k < slots.length && i < list.length; k++){
+              if(slots[k] === null){
                 var num = list[i++];
                 var tkey = defaultType;
-                try{
-                  if (window.__autoTypeByNumber){
-                    var g = window.__autoTypeByNumber(num);
-                    if (g) tkey = g;
-                  }
+                try{ 
+                  if (window.__autoTypeByNumber){ 
+                    var g = window.__autoTypeByNumber(num); 
+                    if (g) tkey = g; 
+                  } 
                 }catch(_){}
-                slots[k] = { id: Date.now()+'-'+Math.random(), number: num, type: tkey, status: 'normal', defectReason: '' };
+                slots[k] = { 
+                  id: Date.now()+'-'+Math.random(), 
+                  number: num, 
+                  type: tkey, 
+                  status: 'normal', 
+                  defectReason: '' 
+                };
               }
             }
-            if (nameEl && String(nameEl.value||'').trim()){
-              window.meta = window.meta || {};
+            
+            if(nameEl && String(nameEl.value||'').trim()){
               window.meta[trackId] = window.meta[trackId] || {};
               window.meta[trackId].trainName = String(nameEl.value).trim();
             }
-            try{ window.saveAll && window.saveAll(); }catch(_){}
-            try{ window.hydrate && window.hydrate(); }catch(_){}
-            // close modal
+            
+            // Сохраняем и обновляем интерфейс
+            if (window.saveAll) window.saveAll();
+            if (window.hydrate) window.hydrate();
+            
+            // Закрываем модальное окно
             var modal = document.getElementById('modalAdd');
             if (modal) modal.classList.add('hidden');
           };
